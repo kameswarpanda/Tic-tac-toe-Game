@@ -9,30 +9,340 @@
     <link rel="stylesheet" href="style.css">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎮</text></svg>">
     <title>Premium Tic Tac Toe</title>
+    <style>
+        /* General body and layout for glassmorphism */
+        body {
+            background: linear-gradient(135deg, #a1c4fd, #c2e9fb); /* Soft gradient background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            color: #333;
+            overflow: hidden; /* Prevent scrollbar from background blur */
+        }
+
+        .game-area {
+            display: flex;
+            gap: 40px; /* Space between game and guide button */
+            align-items: center;
+            position: relative; /* For positioning guide button */
+            flex-wrap: wrap; /* Allow wrapping on smaller screens */
+            justify-content: center;
+        }
+
+        main {
+            background: rgba(255, 255, 255, 0.15); /* Semi-transparent white */
+            backdrop-filter: blur(10px); /* Glass effect */
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            color: #fff; /* White text for contrast on glass */
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+        }
+
+        #turn-indicator {
+            color: #eee;
+            font-size: 1.2em;
+            margin-bottom: 20px;
+        }
+
+        .container {
+            margin: 30px auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .Game {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-template-rows: repeat(3, 100px);
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.1); /* Lighter background for game grid */
+            border-radius: 10px;
+            padding: 10px;
+        }
+
+        .box {
+            width: 100px;
+            height: 100px;
+            border-radius: 10px;
+            border: none;
+            font-size: 3em;
+            color: #333;
+            background: rgba(255, 255, 255, 0.3); /* Individual box glass effect */
+            backdrop-filter: blur(5px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .box:hover {
+            background: rgba(255, 255, 255, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .box:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        #reset-btn, #new-btn, #guide-btn, .modal-close-btn {
+            padding: 12px 25px;
+            font-size: 1.1em;
+            border-radius: 25px;
+            border: none;
+            cursor: pointer;
+            margin-top: 20px;
+            background: linear-gradient(45deg, #6a11cb 0%, #2575fc 100%); /* Gradient button */
+            color: white;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        #reset-btn:hover, #new-btn:hover, #guide-btn:hover, .modal-close-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .msg-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            padding: 30px 50px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            text-align: center;
+            z-index: 100;
+            color: #fff;
+            font-size: 1.5em;
+            font-weight: 700;
+        }
+
+        .msg-container.hide {
+            display: none;
+        }
+
+        #msg {
+            margin-bottom: 20px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        /* Guide Button specific styling */
+        #guide-btn {
+            position: absolute; /* Position relative to .game-area */
+            right: -150px; /* Adjust as needed */
+            top: 50%;
+            transform: translateY(-50%);
+            white-space: nowrap; /* Prevent text wrapping */
+        }
+
+        /* Modal Styling */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6); /* Darker overlay */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px); /* Stronger blur for modal */
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 25px;
+            padding: 40px;
+            box-shadow: 0 10px 40px 0 rgba(31, 38, 135, 0.4);
+            max-width: 700px;
+            width: 90%;
+            color: #fff;
+            text-align: left;
+            position: relative;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.show .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-content h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #fff;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .modal-content p {
+            margin-bottom: 15px;
+            line-height: 1.6;
+            color: #eee;
+        }
+
+        .modal-content .diagram {
+            text-align: center;
+            margin: 25px 0;
+        }
+
+        .modal-content .diagram img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .modal-close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 2em;
+            color: #fff;
+            cursor: pointer;
+            padding: 0;
+            margin: 0;
+            line-height: 1;
+            box-shadow: none;
+        }
+
+        .modal-close-btn:hover {
+            color: #ccc;
+            transform: none; /* Override button hover transform */
+            box-shadow: none;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .game-area {
+                flex-direction: column;
+                gap: 20px;
+            }
+            #guide-btn {
+                position: static;
+                transform: none;
+                margin-top: 20px;
+            }
+            main {
+                padding: 25px;
+            }
+            .Game {
+                grid-template-columns: repeat(3, 80px);
+                grid-template-rows: repeat(3, 80px);
+            }
+            .box {
+                width: 80px;
+                height: 80px;
+                font-size: 2.5em;
+            }
+            .modal-content {
+                padding: 30px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div class="msg-container hide">
-        <p id="msg">Winner</p>
-        <button id="new-btn">New Game</button>
-    </div>
-    <main>
-        <h1>Tic Tac Toe!</h1>
-        <p id="turn-indicator">Player O's Turn</p>
-        <div class="container">
-            <div class="Game">
-                <button class="box"></button>
-                <button class="box"></button>
-                <button class="box"></button>
-                <button class="box"></button>
-                <button class="box"></button>
-                <button class="box"></button>
-                <button class="box"></button>
-                <button class="box"></button>
-                <button class="box"></button>
-            </div>
+    <div class="game-area">
+        <div class="msg-container hide">
+            <p id="msg">Winner</p>
+            <button id="new-btn">New Game</button>
         </div>
-        <button id="reset-btn">Reset Game</button>
-    </main>
+        <main>
+            <h1>Tic Tac Toe!</h1>
+            <p id="turn-indicator">Player O's Turn</p>
+            <div class="container">
+                <div class="Game">
+                    <button class="box"></button>
+                    <button class="box"></button>
+                    <button class="box"></button>
+                    <button class="box"></button>
+                    <button class="box"></button>
+                    <button class="box"></button>
+                    <button class="box"></button>
+                    <button class="box"></button>
+                    <button class="box"></button>
+                </div>
+            </div>
+            <button id="reset-btn">Reset Game</button>
+        </main>
+        <button id="guide-btn">How to Play</button>
+    </div>
+
+    <!-- Guide Modal -->
+    <div class="modal-overlay" id="guide-modal">
+        <div class="modal-content">
+            <button class="modal-close-btn">&times;</button>
+            <h2>How to Play Tic Tac Toe</h2>
+            <p>Tic Tac Toe is a classic two-player game played on a 3x3 grid. Players take turns marking a square with their symbol (typically 'X' or 'O').</p>
+            <div class="diagram">
+                <img src="https://via.placeholder.com/300x200?text=Empty+Grid" alt="Empty Tic Tac Toe Grid">
+                <p><em>An empty 3x3 grid.</em></p>
+            </div>
+            <p>The goal is to get three of your symbols in a row, either horizontally, vertically, or diagonally, before your opponent does.</p>
+            <div class="diagram">
+                <img src="https://via.placeholder.com/300x200?text=Winning+Condition" alt="Winning Condition Example">
+                <p><em>Player 'X' wins with three in a row.</em></p>
+            </div>
+            <p>If all nine squares are filled and neither player has three in a row, the game is a draw.</p>
+            <p>Click on any empty square to place your mark. Good luck!</p>
+        </div>
+    </div>
+
     <script src="script.js"></script>
+    <script>
+        // JavaScript for Guide Modal functionality
+        const guideBtn = document.getElementById('guide-btn');
+        const guideModal = document.getElementById('guide-modal');
+        const modalCloseBtn = document.querySelector('.modal-close-btn');
+
+        if (guideBtn && guideModal && modalCloseBtn) {
+            guideBtn.addEventListener('click', () => {
+                guideModal.classList.add('show');
+            });
+
+            modalCloseBtn.addEventListener('click', () => {
+                guideModal.classList.remove('show');
+            });
+
+            // Close modal if clicking outside the content
+            guideModal.addEventListener('click', (e) => {
+                if (e.target === guideModal) {
+                    guideModal.classList.remove('show');
+                }
+            });
+        } else {
+            console.error("Guide button, modal, or close button not found. Ensure all elements are present in the HTML.");
+        }
+    </script>
 </body>
 </html>
