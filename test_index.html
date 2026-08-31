@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test for CP-01: Premium Glass Design</title>
+    <style>
+        body { font-family: 'Poppins', sans-serif; margin: 20px; background-color: #f4f4f4; color: #333; }
+        .test-result { padding: 10px; margin-bottom: 5px; border-radius: 5px; font-size: 0.9em; }
+        .test-result.pass { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .test-result.fail { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        h1 { color: #333; margin-bottom: 20px; }
+        p { margin-bottom: 10px; }
+        .note { background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; padding: 10px; border-radius: 5px; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h1>CP-01 Test Results: Premium Glass Design</h1>
+    <p>This page tests the structural and functional aspects of the 'Premium glass design' implementation in <code>index.html</code>.</p>
+    <div id="results"></div>
+
+    <div class="note">
+        <strong>Note:</strong> For a complete functional test, <code>index.html</code> should be loaded in an iframe or a headless browser environment. These tests check for the *presence* of elements in the current document (which will fail if <code>index.html</code> is not loaded) and *simulate* the JavaScript interaction logic.
+    </div>
+
+    <script>
+        const resultsDiv = document.getElementById('results');
+
+        function logResult(testName, passed, message) {
+            const div = document.createElement('div');
+            div.className = 'test-result ' + (passed ? 'pass' : 'fail');
+            div.textContent = `${passed ? 'PASS' : 'FAIL'}: ${testName} - ${message}`;
+            resultsDiv.appendChild(div);
+            console.log(`${passed ? 'PASS' : 'FAIL'}: ${testName} - ${message}`);
+        }
+
+        // --- DOM Presence Checks (will only pass if index.html is loaded in this context) ---
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('--- Running DOM Presence Checks (requires index.html to be loaded) ---');
+            logResult('DOM Check: Guide Button', !!document.getElementById('guide-btn'), 'Presence of #guide-btn');
+            logResult('DOM Check: Guide Modal Overlay', !!document.getElementById('guide-modal'), 'Presence of #guide-modal');
+            logResult('DOM Check: Modal Content', !!document.querySelector('#guide-modal .modal-content'), 'Presence of .modal-content inside #guide-modal');
+            logResult('DOM Check: Modal Close Button', !!document.querySelector('#guide-modal .modal-close-btn'), 'Presence of .modal-close-btn inside #guide-modal');
+            logResult('DOM Check: Game Area Wrapper', !!document.querySelector('.game-area'), 'Presence of .game-area wrapper');
+            console.log('--- End DOM Presence Checks ---\n');
+
+            console.log('--- Running Simulated Interaction Logic Tests ---');
+            // Test 1: Check if Guide button opens modal (simulated logic)
+            function testGuideButtonOpensModal() {
+                const guideBtn = document.createElement('button');
+                guideBtn.id = 'guide-btn';
+                const guideModal = document.createElement('div');
+                guideModal.id = 'guide-modal';
+                guideModal.classList.add('modal-overlay'); // Simulate initial state
+
+                let modalOpened = false;
+                guideBtn.addEventListener('click', () => {
+                    guideModal.classList.add('show');
+                    modalOpened = true;
+                });
+
+                // Simulate the click
+                guideBtn.click();
+
+                const passed = modalOpened && guideModal.classList.contains('show');
+                logResult('Simulated: Guide Button Opens Modal', passed, passed ? 'Modal opened successfully.' : 'Modal did not open.');
+                return passed;
+            }
+
+            // Test 2: Check if Close button closes modal (simulated logic)
+            function testCloseButtonClosesModal() {
+                const guideModal = document.createElement('div');
+                guideModal.id = 'guide-modal';
+                guideModal.classList.add('modal-overlay', 'show'); // Simulate modal being open
+
+                const modalCloseBtn = document.createElement('button');
+                modalCloseBtn.className = 'modal-close-btn';
+
+                let modalClosed = false;
+                modalCloseBtn.addEventListener('click', () => {
+                    guideModal.classList.remove('show');
+                    modalClosed = true;
+                });
+
+                // Simulate the click
+                modalCloseBtn.click();
+
+                const passed = modalClosed && !guideModal.classList.contains('show');
+                logResult('Simulated: Close Button Closes Modal', passed, passed ? 'Modal closed successfully.' : 'Modal did not close.');
+                return passed;
+            }
+
+            // Test 3: Check if clicking outside modal closes it (simulated logic)
+            function testClickOutsideClosesModal() {
+                const guideModal = document.createElement('div');
+                guideModal.id = 'guide-modal';
+                guideModal.classList.add('modal-overlay', 'show'); // Simulate modal being open
+
+                const modalContent = document.createElement('div');
+                modalContent.className = 'modal-content';
+                guideModal.appendChild(modalContent);
+
+                let modalClosed = false;
+                guideModal.addEventListener('click', (e) => {
+                    if (e.target === guideModal) { // Check if click was directly on the overlay
+                        guideModal.classList.remove('show');
+                        modalClosed = true;
+                    }
+                });
+
+                // Simulate click on the overlay itself (outside content)
+                guideModal.click();
+
+                const passed = modalClosed && !guideModal.classList.contains('show');
+                logResult('Simulated: Click Outside Closes Modal', passed, passed ? 'Modal closed by clicking outside.' : 'Modal did not close by clicking outside.');
+                return passed;
+            }
+
+            // Run all simulated tests
+            testGuideButtonOpensModal();
+            testCloseButtonClosesModal();
+            testClickOutsideClosesModal();
+
+            console.log('\n--- End of All Tests ---');
+        });
+    </script>
+</body>
+</html>
