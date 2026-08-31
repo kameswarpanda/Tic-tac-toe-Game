@@ -1,15 +1,15 @@
 :root {
-    --primary-bg: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
-    --secondary-bg: #ffffff;
+    --primary-bg: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%); /* Premium soft gradient */
+    --secondary-bg: rgba(255, 255, 255, 0.15); /* For main container glassmorphism */
     --text-color-light: #ffffff;
     --text-color-dark: #333333;
-    --box-bg: linear-gradient(145deg, #e0e0e0, #f0f0f0);
-    --box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-    --button-bg: linear-gradient(45deg, #00c6ff 0%, #0072ff 100%);
-    --button-hover-bg: linear-gradient(45deg, #0072ff 0%, #00c6ff 100%);
+    --box-bg: rgba(255, 255, 255, 0.3); /* For individual box glassmorphism */
+    --box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37); /* For main container glassmorphism */
+    --button-bg: linear-gradient(45deg, #6a11cb 0%, #2575fc 100%); /* Premium button gradient */
+    --button-hover-bg: linear-gradient(45deg, #2575fc 0%, #6a11cb 100%); /* Reversed for hover effect */
     --player-o-color: #e74c3c; /* Red */
     --player-x-color: #2ecc71; /* Green */
-    --msg-bg: rgba(0, 0, 0, 0.8);
+    --msg-overlay-bg: rgba(0, 0, 0, 0.6); /* Darker overlay for message/modal */
 }
 
 * {
@@ -21,71 +21,90 @@
 
 body {
     background: var(--primary-bg);
-    min-height: 100vh;
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
-    text-align: center;
-    color: var(--text-color-light);
+    min-height: 100vh;
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    color: var(--text-color-dark); /* Default text color for elements not explicitly styled */
+    overflow: hidden; /* Prevent scrollbar from background blur */
+}
+
+.game-area {
+    display: flex;
+    gap: clamp(20px, 4vw, 40px); /* Responsive gap between game and guide button */
+    align-items: center;
+    position: relative; /* For positioning guide button */
+    flex-wrap: wrap; /* Allow wrapping on smaller screens */
+    justify-content: center;
+    padding: 1vmin; /* Small padding for very small screens */
 }
 
 main {
+    background: var(--secondary-bg); /* Semi-transparent white for glassmorphism */
+    backdrop-filter: blur(10px); /* Glass effect */
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    padding: clamp(20px, 5vw, 40px); /* Responsive padding */
+    box-shadow: var(--box-shadow);
+    text-align: center;
+    max-width: clamp(300px, 90vw, 500px); /* Responsive max-width */
+    width: 100%;
+    box-sizing: border-box;
+    color: var(--text-color-light); /* Text inside main should be light */
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 1.5rem;
-    padding: 2rem;
-    background-color: rgba(255, 255, 255, 0.1);
-    border-radius: 1.5rem;
-    box-shadow: var(--box-shadow);
-    margin: 2rem 0;
+    gap: 1.5rem; /* Keep existing gap for internal elements */
+    margin: 0; /* Remove external margin, game-area handles spacing */
 }
 
 h1 {
-    font-size: 3rem;
+    font-size: clamp(2rem, 6vw, 3rem); /* Responsive font size */
     font-weight: 700;
-    color: var(--text-color-light);
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    color: var(--text-color-light); /* White text for contrast on glass */
+    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    margin-bottom: clamp(10px, 3vw, 20px); /* Responsive margin */
 }
 
 #turn-indicator {
-    font-size: 1.8rem;
+    color: #eee; /* Light color for contrast */
+    font-size: clamp(1rem, 3.5vw, 1.8rem); /* Responsive font size */
+    margin-bottom: clamp(10px, 3vw, 20px); /* Responsive margin */
     font-weight: 600;
-    color: var(--text-color-light);
-    margin-bottom: 1rem;
 }
 
 .container {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-bottom: 1.5rem;
 }
 
 .Game {
-    height: 60vmin;
-    width: 60vmin;
+    height: clamp(250px, 60vmin, 500px); /* Responsive height */
+    width: clamp(250px, 60vmin, 500px); /* Responsive width */
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: repeat(3, 1fr);
-    gap: 1.5vmin;
-    background-color: rgba(255, 255, 255, 0.2);
-    border-radius: 1rem;
-    padding: 1.5vmin;
-    box-shadow: var(--box-shadow);
+    gap: clamp(5px, 1.5vmin, 10px); /* Responsive gap */
+    background: rgba(255, 255, 255, 0.1); /* Lighter background for game grid */
+    border-radius: 10px;
+    padding: clamp(5px, 1.5vmin, 10px); /* Responsive padding */
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2); /* Lighter shadow for the game grid */
 }
 
 .box {
-    height: 18vmin;
-    width: 18vmin;
-    border-radius: 0.8rem;
+    height: clamp(70px, 18vmin, 150px); /* Responsive height */
+    width: clamp(70px, 18vmin, 150px); /* Responsive width */
+    border-radius: 10px;
     border: none;
-    background: var(--box-bg);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    font-size: 10vmin;
+    font-size: clamp(2.5rem, 10vmin, 5rem); /* Responsive font size */
     font-weight: 700;
-    color: var(--text-color-dark);
+    color: var(--text-color-dark); /* Dark text for contrast */
+    background: var(--box-bg); /* Individual box glass effect */
+    backdrop-filter: blur(5px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     cursor: pointer;
     transition: all 0.2s ease-in-out;
     display: flex;
@@ -94,9 +113,14 @@ h1 {
 }
 
 .box:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
-    background: linear-gradient(145deg, #f0f0f0, #e0e0e0);
+    background: rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+}
+
+.box:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
 .box:disabled {
@@ -104,75 +128,203 @@ h1 {
     opacity: 0.8;
 }
 
-#reset-btn, #new-btn {
-    padding: 1rem 2rem;
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: var(--text-color-light);
-    background: var(--button-bg);
-    border-radius: 0.8rem;
+#reset-btn, #new-btn, #guide-btn, .modal-close-btn {
+    padding: clamp(10px, 2.5vw, 12px) clamp(20px, 5vw, 25px); /* Responsive padding */
+    font-size: clamp(0.9rem, 2.5vw, 1.1rem); /* Responsive font size */
+    border-radius: 25px;
     border: none;
     cursor: pointer;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    transition: all 0.2s ease-in-out;
-    margin-top: 1rem;
+    margin-top: clamp(15px, 4vw, 20px); /* Responsive margin-top */
+    background: var(--button-bg);
+    color: white;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+    font-weight: 600;
 }
 
-#reset-btn:hover, #new-btn:hover {
+#reset-btn:hover, #new-btn:hover, #guide-btn:hover, .modal-close-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
     background: var(--button-hover-bg);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
 }
 
 .msg-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
+    position: absolute; /* Positioned relative to .game-area */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(255, 255, 255, 0.2); /* Glassmorphism */
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 20px;
+    padding: clamp(20px, 5vw, 30px) clamp(30px, 8vw, 50px); /* Responsive padding */
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    text-align: center;
+    z-index: 100;
+    color: var(--text-color-light);
+    font-size: clamp(1.2em, 4vw, 1.5em); /* Responsive font size */
+    font-weight: 700;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     gap: 2rem;
-    z-index: 1000;
-    backdrop-filter: blur(5px);
+    width: clamp(250px, 70vw, 400px); /* Responsive width for the message box */
+    box-sizing: border-box;
 }
 
 #msg {
     color: var(--text-color-light);
-    font-size: 7vmin;
+    font-size: clamp(1.8rem, 7vmin, 3rem); /* Responsive font size */
     font-weight: 700;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    margin-bottom: clamp(10px, 3vw, 20px); /* Responsive margin */
 }
 
 .hide {
     display: none !important;
 }
 
+/* Guide Button specific positioning */
+#guide-btn {
+    position: absolute; /* Position relative to .game-area */
+    right: clamp(-100px, -20vw, -150px); /* Responsive right position */
+    top: 50%;
+    transform: translateY(-50%);
+    white-space: nowrap; /* Prevent text wrapping */
+}
+
+/* Modal Styling */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--msg-overlay-bg); /* Darker overlay */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.modal-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-content {
+    background: var(--secondary-bg);
+    backdrop-filter: blur(20px); /* Stronger blur for modal */
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 25px;
+    padding: clamp(20px, 5vw, 40px); /* Responsive padding */
+    box-shadow: 0 10px 40px 0 rgba(31, 38, 135, 0.4);
+    max-width: clamp(300px, 90vw, 700px); /* Responsive max-width */
+    width: 90%;
+    color: var(--text-color-light);
+    text-align: left;
+    position: relative;
+    transform: scale(0.9);
+    transition: transform 0.3s ease;
+}
+
+.modal-overlay.show .modal-content {
+    transform: scale(1);
+}
+
+.modal-content h2 {
+    text-align: center;
+    margin-bottom: clamp(15px, 4vw, 30px); /* Responsive margin */
+    color: var(--text-color-light);
+    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    font-size: clamp(1.5rem, 5vw, 2.2rem); /* Responsive font size */
+}
+
+.modal-content p {
+    margin-bottom: clamp(10px, 2vw, 15px); /* Responsive margin */
+    line-height: 1.6;
+    color: #eee;
+    font-size: clamp(0.9rem, 2.5vw, 1rem); /* Responsive font size */
+}
+
+.modal-content .diagram {
+    text-align: center;
+    margin: clamp(15px, 4vw, 25px) 0; /* Responsive margin */
+}
+
+.modal-content .diagram img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.modal-close-btn {
+    position: absolute;
+    top: clamp(10px, 3vw, 20px);
+    right: clamp(10px, 3vw, 20px);
+    background: none; /* Override button background */
+    border: none;
+    font-size: clamp(1.5em, 5vw, 2em); /* Responsive font size */
+    color: var(--text-color-light);
+    cursor: pointer;
+    padding: 0;
+    margin: 0;
+    line-height: 1;
+    box-shadow: none; /* Override button shadow */
+}
+
+.modal-close-btn:hover {
+    color: #ccc;
+    transform: none; /* Override button hover transform */
+    box-shadow: none;
+}
+
 /* Responsive adjustments */
-@media (max-width: 600px) {
+@media (max-width: 768px) {
+    .game-area {
+        flex-direction: column;
+        gap: 20px; /* Specific gap for this breakpoint */
+    }
+    #guide-btn {
+        position: static; /* Override absolute positioning */
+        transform: none;
+        margin-top: 20px; /* Add margin when stacked */
+    }
+}
+
+@media (max-width: 480px) {
     h1 {
-        font-size: 2.5rem;
+        font-size: clamp(1.8rem, 8vw, 2.5rem);
     }
     #turn-indicator {
-        font-size: 1.5rem;
+        font-size: clamp(0.9rem, 3.5vw, 1.5rem);
     }
     .Game {
-        height: 70vmin;
-        width: 70vmin;
+        height: clamp(200px, 80vmin, 400px);
+        width: clamp(200px, 80vmin, 400px);
     }
     .box {
-        height: 21vmin;
-        width: 21vmin;
-        font-size: 12vmin;
+        height: clamp(60px, 24vmin, 120px);
+        width: clamp(60px, 24vmin, 120px);
+        font-size: clamp(2rem, 12vmin, 4rem);
     }
-    #reset-btn, #new-btn {
-        padding: 0.8rem 1.5rem;
-        font-size: 1rem;
+    #reset-btn, #new-btn, #guide-btn, .modal-close-btn {
+        padding: clamp(8px, 2vw, 10px) clamp(15px, 4vw, 20px);
+        font-size: clamp(0.8rem, 2vw, 1rem);
     }
-    #msg {
-        font-size: 6vmin;
+    .modal-content {
+        padding: clamp(15px, 4vw, 30px);
+    }
+    .modal-content h2 {
+        font-size: clamp(1.2rem, 4vw, 1.8rem);
+    }
+    .modal-content p {
+        font-size: clamp(0.8rem, 2vw, 0.9rem);
     }
 }
